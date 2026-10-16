@@ -1,0 +1,30 @@
+# Workspace-Meta (nicht Teil des öffentlichen Repos)
+AGENTS.md
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editoren
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node
+node_modules/
+.env
+.env.local
+
+# Logs / Temp
+*.log
+*.tmp
+temp/
