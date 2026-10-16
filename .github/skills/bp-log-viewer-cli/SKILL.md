@@ -53,4 +53,4 @@ $exitCode = $LASTEXITCODE
 
 ## Quelle / Source
 
-Dieser Skill wird im Repository [**BP-Agents**](https://github.com/schirkan/BP-Agents) gepflegt (Pfad: `.github/skills/bp-log-viewer-cli/`). Ergänzungen und Korrekturen bitte dort als PR einreichen.
+Die beschriebene CLI lebt im Repository [**bp-log-viewer-cli**](https://github.com/schirkan/bp-log-viewer-cli). Ergänzungen, Korrekturen und Issues bitte dort einreichen.

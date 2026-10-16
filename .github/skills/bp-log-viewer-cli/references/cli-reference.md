@@ -370,13 +370,3 @@ ADO.NET akzeptiert LocalDB/Remote SQL Server und die konfigurierte Authentifizie
 | `BP_LOG_VIEWER_OUTPUT_ROOT` | Pfadanker und erlaubter Root für `--output`/`--out-file`. |
 
 Für Filterzeitpunkte ISO-8601 mit `Z` oder explizitem Offset bevorzugen. Der Parser normalisiert Eingaben auf UTC; ohne Offset nimmt er UTC an. Session-Ausgaben verwenden die gespeicherten Minuten-Offsets; andere DateTime-Spalten werden überwiegend als UTC interpretiert. Bei Datenbanken mit lokalen Serverzeiten kann dadurch eine Zeitverschiebung entstehen. Bei der Analyse tatsächliche Offsets beachten, keine automatische Berlin-Konvertierung behaupten.
-
-## 9. Quellen und Pflege
-
-Bei CLI-Änderungen diese Referenz zusammen mit den relevanten Optionen aktualisieren:
-
-- [Dispatcher und Hilfe](../../../../src/BpLogViewer.Cli/Program.cs)
-- [Globaler Filterparser](../../../../src/BpLogViewer.Cli/Filters/FilterParser.cs) und [Limitkonstanten](../../../../src/BpLogViewer.Cli/Filters/Filters.cs)
-- [Befehle](../../../../src/BpLogViewer.Cli/Commands) und [SQL-/Reader-Implementierung](../../../../src/BpLogViewer.Cli/Data)
-- [Ausgabemodelle](../../../../src/BpLogViewer.Cli/Models) und [JSONL-Ausgabe](../../../../src/BpLogViewer.Cli/Output)
-- [Konfigurationssuche](../../../../src/BpLogViewer.Cli/Configuration/ConfigurationLoader.cs) und [Pfadprüfung](../../../../src/BpLogViewer.Cli/Configuration/PathResolver.cs)
