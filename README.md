@@ -1,11 +1,12 @@
 # BP-Agents
 
-Sammlung von KI-Agenten und Skill-Dateien.
+Sammlung von KI-Agenten und Skill-Dateien, strukturiert für GitHub Copilot.
 
 ## Inhalt
 
-- `agents/` – KI-Agenten-Definitionen
-- `skills/` – Skill-Dateien (wiederverwendbare Fähigkeiten für Agenten)
+- `.github/agents/` – Agent-Definitionen (eine Datei pro Agent)
+- `.github/skills/` – Skill-Definitionen (eine Datei pro Skill, wiederverwendbar)
+- `AGENTS.md` – zentrale Copilot-Instructions, Schemata und Konventionen
 
 ## Lizenz
 
