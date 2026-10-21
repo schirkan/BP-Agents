@@ -63,6 +63,8 @@ Invoke-Command -ComputerName 'srv-host-01' -Credential $cred -ScriptBlock {
 
 Voraussetzung: WinRM auf dem Ziel aktiv (TCP 5985 bzw. 5986), PowerShell-Remoting eingerichtet.
 
+**Wird die eigene Session des anfragenden Users abgemeldet** und läuft der über WinRM gestartete PowerShell-Prozess in derselben Windows-Session, beendet `logoff` diesen Prozess mit. Die Rückgabe bleibt dann leer und die WinRM-Verbindung bricht ab. Der Eingriff war trotzdem erfolgreich. Verifikation in diesem Fall ausschließlich über `quser /server:<host>` — den Befehl **nicht** wiederholen, weil die Session-ID inzwischen neu vergeben sein kann und ein zweiter Logoff eine fremde Session treffen würde.
+
 ### 3.2 `Win32_LogOff` über CIM
 
 ```powershell
@@ -182,6 +184,30 @@ Aufruf:
 Invoke-RemoteSessionLogoff -ComputerName 'srv-host-01' -SessionId 2 -ExpectedUser 'JohnDoe' -Mode logoff -Confirm
 ```
 
+### 4.1 Eigene Session auf dem Ziel abmelden
+
+Das Freigeben der eigenen RDP-Sitzung ist ein regulärer Anwendungsfall. Voraussetzung ist nur, dass Zielsystem und aufrufendes System verschieden sind — die lokale Sitzung des Aufrufers bleibt geschützt.
+
+```powershell
+# Eigene Session 'Martin' auf dem Ziel ermitteln
+$raw = & quser /server:'srv-host-01' 2>&1
+$mine = $raw | Select-Object -Skip 1 | Where-Object { [string]$_ -match 'Martin' }
+$mine
+```
+
+Ablauf:
+
+1. Session-ID aus der Ausgabe übernehmen — **nicht** aus einer früheren Abfrage, die ID kann inzwischen neu vergeben sein.
+2. Bestätigung einholen: „Session 3 (rdp-tcp#3) von Martin auf srv-host-01 abmelgen — deine eigene Sitzung, läuft dort gerade was?".
+3. Ausführen. Läuft der Befehl in dieser Session, bricht der Rückgabeweg ab — das ist erwartet, siehe Abschnitt 3.1.
+4. Aus **einer anderen** Sitzung heraus nachkontrollieren, z. B. vom lokalen System:
+
+```powershell
+& quser /server:'srv-host-01' 2>&1 | Select-String -Pattern 'Martin'
+```
+
+Bleibt der Treffer leer, war die Abmeldung erfolgreich.
+
 **Vor dem Ausführen prüfen, was in der Session läuft.** Bei einem RPA-Client oder einem Editor kann die Abmeldung laufende Arbeit zerstören:
 
 ```powershell
@@ -198,6 +224,7 @@ Invoke-Command -ComputerName 'srv-host-01' -Credential $cred -ScriptBlock {
 - Die Session-ID wird freigegeben und bei der nächsten Anmeldung neu vergeben. Gespeicherte Session-IDs sind danach wertlos.
 - Ungespeicherte Arbeit in Anwendungen geht verloren. Bei `logoff` können Anwendungen auf `WM_QUERYENDSESSION` noch reagieren, das ist aber nicht garantiert.
 - **RPA-Hinweis:** Läuft in der Session ein Blue-Prism- oder anderer Automatisierungsclient, bricht dieser ohne Vorwarnung ab. Work-Queue-Items können in einem Zwischenstatus hängen bleiben. Vor der Abmeldung prüfen, ob ein Prozess aktiv ist, und den Nutzer darauf hinweisen.
+- **Eigene Session:** Die eigene Sitzung des anfragenden Users auf dem Ziel darf abgemeldet werden. Läuft der Befehl in dieser Session, bricht der Rückgabeweg ab, der Eingriff ist aber erfolgreich — siehe Abschnitt 3.1.
 
 ## 6. Fehlermeldungen und Return-Codes
 
