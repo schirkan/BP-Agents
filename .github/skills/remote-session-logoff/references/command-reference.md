@@ -208,7 +208,7 @@ Ablauf:
 
 Bleibt der Treffer leer, war die Abmeldung erfolgreich.
 
-**Vor dem Ausführen prüfen, was in der Session läuft.** Bei einem RPA-Client oder einem Editor kann die Abmeldung laufende Arbeit zerstören:
+**Vor dem Ausführen prüfen, was in der Session läuft.** Bei einer Anwendung mit ungespeicherter Arbeit kann die Abmeldung laufende Arbeit zerstören:
 
 ```powershell
 Invoke-Command -ComputerName 'srv-host-01' -Credential $cred -ScriptBlock {
@@ -223,7 +223,7 @@ Invoke-Command -ComputerName 'srv-host-01' -Credential $cred -ScriptBlock {
 - Offene RDP-Verbindungen zur Session brechen ab.
 - Die Session-ID wird freigegeben und bei der nächsten Anmeldung neu vergeben. Gespeicherte Session-IDs sind danach wertlos.
 - Ungespeicherte Arbeit in Anwendungen geht verloren. Bei `logoff` können Anwendungen auf `WM_QUERYENDSESSION` noch reagieren, das ist aber nicht garantiert.
-- **RPA-Hinweis:** Läuft in der Session ein Blue-Prism- oder anderer Automatisierungsclient, bricht dieser ohne Vorwarnung ab. Work-Queue-Items können in einem Zwischenstatus hängen bleiben. Vor der Abmeldung prüfen, ob ein Prozess aktiv ist, und den Nutzer darauf hinweisen.
+- **Hintergrundprozesse:** Läuft in der Session ein Client mit Hintergrundverarbeitung (etwa ein Batch-Client, ein Job-Runner oder eine Synchronisationssoftware), bricht dieser ohne Vorwarnung ab. Nachgelagerte Aufgaben können in einem Zwischenstatus hängen bleiben. Vor der Abmeldung prüfen, ob ein solcher Prozess aktiv ist, und den Nutzer darauf hinweisen.
 - **Eigene Session:** Die eigene Sitzung des anfragenden Users auf dem Ziel darf abgemeldet werden. Läuft der Befehl in dieser Session, bricht der Rückgabeweg ab, der Eingriff ist aber erfolgreich — siehe Abschnitt 3.1.
 
 ## 6. Fehlermeldungen und Return-Codes

@@ -59,7 +59,7 @@ Diese Regeln sind bindend. Der Skill bricht ab, wenn eine davon nicht erfüllt i
 6. **Nur die angeforderte Session.** Kein Abräumen mehrerer Sessions, keine Schleife über alle angemeldeten User. Jede zusätzliche Session braucht eine eigene Bestätigung.
 7. **Passwörter bleiben aus dem Output.** Weder in Befehlsargumenten noch in Fehlermeldungen, Protokollen oder Dateien. `Get-Credential` bevorzugen; das Passwort wird interaktiv abgefragt und nie protokolliert.
 8. **Immer nachkontrollieren.** Nach dem Befehl erneut `quser /server:<host>` ausführen und prüfen, dass die Session wirklich verschwunden ist. Ein Exit-Code 0 allein ist kein Nachweis.
-9. **Interaktive Prozesse vorher prüfen.** Läuft in der Session eine Anwendung, die Arbeit ungespeichert hält (RPA-Client, Editor, Office-Anwendung), wird diese ohne Vorwarnung beendet. Vorher auf laufende Prozesse prüfen und den Nutzer darauf hinweisen.
+9. **Interaktive Prozesse vorher prüfen.** Läuft in der Session eine Anwendung mit ungespeicherter Arbeit (Editor, Office-Anwendung, Client mit Hintergrundverarbeitung), wird diese ohne Vorwarnung beendet. Vorher auf laufende Prozesse prüfen und den Nutzer darauf hinweisen.
 10. **Keine Ausführung bei unklarem Ziel.** Host, Session oder Benutzer nicht eindeutig → nur berichten, nichts ausführen.
 
 ## Vorgehen
