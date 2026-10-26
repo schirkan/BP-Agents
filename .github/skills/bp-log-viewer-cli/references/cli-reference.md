@@ -157,14 +157,14 @@ Syntax: `session log <positive-session-number> [--stage <name>] [--full-result] 
 & $cli session log 4711 --text 'Timeout' --max-rows 200
 ```
 
-Ausgabe: `log_id`, `source_table`, `stage_name`, `stage_type`, `result_type`, `result_type_name`, `started_at`, `ended_at`, `duration_ms`, `result_preview`, `attribute_size_bytes`. Resulttypnamen werden optional aus `BPALogResultType` ergänzt; bei Problemen Warnung `result_type_table_unavailable` und Fallback-Namen.
+Ausgabe: kompaktes JSONL. Die erste Zeile ist der Spaltenkopf `["log_id","started_at","stage_name","stage_type","result_type","result_type_name","result_preview","attribute_size_bytes"]`, danach je Log-Eintrag ein Array mit genau diesen 8 Werten in derselben Reihenfolge. Fehlende Werte bleiben `null` und halten ihre Spaltenposition. `source_table`, `ended_at` und `duration_ms` werden nicht ausgegeben. Resulttypnamen werden optional aus `BPALogResultType` ergänzt; bei Problemen Warnung `result_type_table_unavailable` und Fallback-Namen.
 
 **Wichtige Grenzen:**
 
 - Keine Wirkung von `--since`, `--until`, `--process`, `--resource`, `--status` oder `--has-exception`.
 - Aufsteigende `logid`-Sortierung: Kürzung schneidet spätere Einträge ab, nicht frühere. Es gibt keinen Startoffset, keinen Zeitfilter, keinen Tail-Modus. Für vollständigen Kontext Limit erhöhen oder Stage/Text gezielt filtern; oberhalb 100000 bleibt eine Lücke.
 - Die aktive Tabelle wird datenbankweit gewählt: Nicht-leere `BPASessionLog_NonUnicode` hat Vorrang, sonst `BPASessionLog_Unicode`. Es werden nicht beide Tabellen für die ausgewählte Session zusammengeführt.
-- Wenn beide Tabellen leer sind: `no_log_entries`, Exit 0. Eine leere Ausgabe für eine bestimmte Session beweist weder deren Existenz noch Fehlerfreiheit; gegebenenfalls `session get` und `source_table`/Tabellenwahl prüfen.
+- Wenn beide Tabellen leer sind: `no_log_entries`, Exit 0. Eine leere Ausgabe für eine bestimmte Session beweist weder deren Existenz noch Fehlerfreiheit; gegebenenfalls `session get` prüfen. Der Spaltenkopf wird auch bei leeren Ergebnissen ausgegeben - Datensätze folgen erst in den Zeilen danach.
 
 ### `session errors`
 
@@ -291,7 +291,7 @@ Ausgabe: `event_id`, `event_at`, `code`, `narrative`, `src_user`, `tgt_user`, `t
 
 ## 6. JSONL, Streams und Export
 
-- Ein JSON-Objekt pro Zeile, keine äußere Array-Klammer; JSONL und NDJSON bezeichnen dasselbe Zeilenformat.
+- Ein JSON-Objekt pro Zeile, keine äußere Array-Klammer; JSONL und NDJSON bezeichnen dasselbe Zeilenformat. Ausnahme: `session log` schreibt kompakte Arrays - erste Zeile Spaltenkopf, danach je Eintrag ein Array mit 8 Werten (siehe Abschnitt `session log`).
 - Datensätze auf stdout, Warnungen und Fehler als JSONL auf stderr. Hilfe ist Klartext auf stderr. Streams nicht mit `2>&1` vermischen, wenn Daten automatisch geparst werden sollen.
 - Feldnamen in `snake_case`; null-Felder werden normalerweise weggelassen. Fehlendes Feld und leerer Text sind nicht dasselbe.
 - Unicode-Zeichen bleiben lesbar, JSON-Steuerzeichen escaped.
