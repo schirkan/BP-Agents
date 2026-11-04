@@ -16,24 +16,35 @@ Diese Referenz dokumentiert das tatsächliche Verhalten des BP-Analyzer-CLI (Pro
 | Quellprojekt | `BP-Analyzer.csproj`, `TargetFramework net8.0`, AssemblyName `BP-Analyzer` |
 | Publish | `dotnet publish BP-Analyzer.csproj -p:PublishProfile=BP-Analyzer-win-x64 -o publish` |
 
-### Release-Builds
+### Release-Builds (Stand 04.11.2026, v1.0.4)
 
-Unter [Releases](https://github.com/schirkan/bp-analyzer/releases) liegen fertige Windows-Builds. Zwei Workflows sind aktiv: `CI` (ci.yml) für Build und Tests, `Release` (release.yml) für die Veröffentlichung. Der Release-Workflow läuft bei jedem Tag-Push (`v*`) sowie manuell per `workflow_dispatch`.
+[Release v1.0.4](https://github.com/schirkan/bp-analyzer/releases/tag/v1.0.4) bietet ausschließlich [BP-Analyzer.zip](https://github.com/schirkan/bp-analyzer/releases/download/v1.0.4/BP-Analyzer.zip) (7.623.855 Bytes, Windows x64).
 
-| Release | Datum | Asset | Größe |
-|---|---|---|---|
-| `v1.0.1` | 04.11.2026 | `BP-Analyzer-win-x64.exe` | 12.625.782 Bytes |
-| `v1.0.0` | 04.11.2026 | `BP-Analyzer-win-x64.exe` | 12.625.429 Bytes |
+- Inhalt: `BP-Analyzer.exe` und `bp-analyzer.config.json` als Beispielkonfiguration. Entpacken und manuell unter `.github/skills/bp-analyzer-cli/bin/` ablegen; keine Umbenennung erforderlich.
+- Keine separate EXE und keine `checksums.txt` als Release-Asset. Die SHA256 steht im Release-Text. Für v1.0.4: `855a2eddbbcc109ace72d0b600e17868add46575f89df2e195c08f0b59db9b1a`.
+- Der Nutzer kann das ZIP mit `Get-FileHash BP-Analyzer.zip -Algorithm SHA256` prüfen. Der Agent lädt es nicht herunter, entpackt es nicht und baut weder das Tool noch den generierten Code.
+- Keine .NET-Runtime erforderlich. Templates sind eingebettet; `codegen` und `analyze` funktionieren ohne Konfiguration oder Blue-Prism-Installation.
+- Release-Builds entstehen bei Version-Tag-Pushes, nicht bei Branch-Pushes oder Pull Requests. Seit v1.0.4 wird kein redundantes Workflow-Artefakt mehr hochgeladen.
+- Bei späteren Releases Download-Asset und Prüfsumme auf der Release-Seite prüfen, nicht historische Dateinamen voraussetzen.
 
-- Download-Pfad: `https://github.com/schirkan/bp-analyzer/releases/download/<tag>/BP-Analyzer-win-x64.exe`
-- Zu jedem Release gehört `checksums.txt` (91 Bytes) mit der SHA256 des Binaries. Prüfen mit `Get-FileHash BP-Analyzer-win-x64.exe -Algorithm SHA256`.
-- Das Asset ist eine **einzelne Datei, kein ZIP**. Neben dem Binary wird nichts benötigt — die Templates sind eingebettet, eine .NET-Runtime wird nicht vorausgesetzt.
-- Der Asset-Name lautet `BP-Analyzer-win-x64.exe`; für die lokale Ablage wird die Datei in `BP-Analyzer.exe` umbenannt.
-- Der Workflow leitet die Version aus dem Tag ab und setzt sie per `-p:Version` — die Assembly-Metadaten folgen damit dem Tag.
-- **Größenwächter:** Der Workflow bricht ab, wenn das Binary über 20 MB wiegt. Ursache ist in der Regel ein übersprungenes Trimming, weil das Publish-Profil beim Restore nicht mitgegeben wurde. Erwartet sind rund 12,6 MB.
-- Die Release-Notes liegen im Repository in `RELEASE_NOTES.md`; der Workflow ersetzt dort den Platzhalter `<sha256>` durch den tatsächlichen Hash.
-- Für einen Build aus dem Quellcode gilt weiterhin: `dotnet publish BP-Analyzer.csproj -p:PublishProfile=BP-Analyzer-win-x64 -o publish` (setzt das .NET-8-SDK voraus).
-| Template-Abhängigkeit | Handlebars.Net 2.1.6; `TemplateProvider` bevorzugt eine Datei auf der Platte, damit lokale Overrides weiter funktionieren |
+### Optionale AutomateC-Konfiguration (nur Export)
+
+Priorität: `--automate-c=<pfad>` → `automateCPath` aus `bp-analyzer.config.json` → Standard `C:\Program Files\Blue Prism Limited\Blue Prism Automate\AutomateC.exe`.
+
+Die Konfiguration wird zuerst im EXE-Verzeichnis, danach im aktuellen Arbeitsverzeichnis gesucht. Ohne Datei gilt der Standardpfad. Eine ungültige oder unlesbare Konfiguration erzeugt eine Warnung und führt zum Standard zurück; den tatsächlich gewählten Pfad prüfen.
+
+```json
+{
+  "automateCPath": "C:\\Tools\\Blue Prism\\AutomateC.exe"
+}
+```
+
+```powershell
+& $analyzer export "--process=Rechnungsverarbeitung" "--automate-c=C:\Tools\Blue Prism\AutomateC.exe" "--output=C:\Analysen\xml"
+$exitCode = $LASTEXITCODE
+```
+
+CLI-Pfadüberschreibung für einen vom Nutzer benannten Installationsort ist erlaubt, eine Konfigurationsänderung aber nur auf Auftrag. Dies verändert weder Blue-Prism-Prozesse noch den Quellcode des Tools.
 
 Aufruf:
 
@@ -46,14 +57,14 @@ BP-Analyzer <modus> [optionen]
 | `export` | Blue-Prism-Prozess als XML exportieren |
 | `codegen` | Aus XML VB.NET-Code erzeugen |
 | `analyze` | Aus den JSON-Metadaten ein SDD-Dokument erzeugen |
-| `help`, `--help`, `-h` | Übersicht der Modi und Hinweis auf `<modus> --help` |
+| `help`, `--help`, `-h` | Allgemeine Übersicht der Modi. Modusbezogenes `--help` ist nicht zuverlässig rein lesend und darf nicht als sichere Hilfeabfrage verwendet werden. |
 
 **Ohne Argumente** startet ein interaktives Menü (1 = Export, 2 = Codegen, 3 = Analyze); fehlende Parameter werden abgefragt. Im nicht-interaktiven Betrieb immer die Form mit Argumenten verwenden. Eine ungültige Menüauswahl liefert einen leeren Modus und führt zum Abbruch ohne Aktion.
 
 ## 2. Modus `export`
 
 ```
-BP-Analyzer export --process=<name> [--output=<path>] [--user=<username>] [--password=***] [--overwrite=<yes|no>]
+BP-Analyzer export --process=<name> [--output=<path>] [--user=<username>] [--password=***] [--overwrite=<yes|no>] [--automate-c=<pfad>]
 ```
 
 | Option | Pflicht | Standard | Wirkung |
@@ -63,6 +74,7 @@ BP-Analyzer export --process=<name> [--output=<path>] [--user=<username>] [--pas
 | `--user=<username>` | bedingt | — | Blue-Prism-Benutzer. Ohne Angabe wird SSO verwendet. |
 | `--password=***` | bedingt | — | Passwort. **Pflicht**, wenn `--user` gesetzt ist, und unzulässig ohne `--user`. |
 | `--overwrite=<yes|no>` | nein | `yes` | Überschreiben vorhandener Exporte. |
+| `--automate-c=<pfad>` | nein | Konfiguration oder Standardpfad | Pfad zu AutomateC.exe; gewinnt gegenüber der optionalen Konfiguration. |
 
 Auch positionsgebundene Argumente werden akzeptiert (Prozess, Ausgabe, Benutzer, Passwort). Named Form verwenden.
 
@@ -105,7 +117,7 @@ Exit-Code: `0` wenn kein Export fehlschlug, sonst `1`.
 
 | Schritt | Verhalten |
 |---|---|
-| AutomateC-Aufruf | `C:\Program Files\Blue Prism Limited\Blue Prism Automate\AutomateC.exe` — **Pfad im Tool fest verdrahtet**, keine CLI-Option vorhanden |
+| AutomateC-Aufruf | Standardinstallation oder `--automate-c=<pfad>` / `bp-analyzer.config.json`; Priorität CLI → Konfiguration → Standard. |
 | Argumente | mit Zugangsdaten: `/export "<name>" /user "<user>" "<password>"` — ohne: `/export "<name>" /sso` |
 | Arbeitsverzeichnis | Temporärverzeichnis des Systems; die exportierte Datei wird von dort ins Zielverzeichnis verschoben |
 | Erwartete Dateinamen | `BPA Process - <name>.xml` und `BPA Object - <name>.xml` |
@@ -200,7 +212,7 @@ Für die Ablaufanalyse ist dieser Modus **nicht erforderlich**. Er liefert ein m
 $analyzer = (Resolve-Path -LiteralPath '.github\skills\bp-analyzer-cli\bin\BP-Analyzer.exe' -ErrorAction Stop).Path
 $base = 'analysis-records/2026-11-04/161500-rechnungsverarbeitung-analyzer'
 
-& $analyzer export  --process='Rechnungsverarbeitung' --output="$base/xml"
+& $analyzer export  "--process=Rechnungsverarbeitung" --output="$base/xml"
 $exitCode = $LASTEXITCODE
 
 & $analyzer codegen --xml="$base/xml"  --output="$base/code"
@@ -221,7 +233,7 @@ $exitCode = $LASTEXITCODE
 
 | Einschränkung | Auswirkung |
 |---|---|
-| `AutomateC.exe`-Pfad fest verdrahtet | Bei abweichendem Installationsort scheitert der Export. Es gibt keine CLI-Option zum Überschreiben. Abweichung melden, das Tool nicht ändern. |
+| AutomateC-Pfad / fehlende Installation | Nur `export` benötigt AutomateC.exe. Abweichenden Nutzerpfad über `--automate-c=<pfad>` verwenden; fehlt die Datei, wird der Export abgebrochen. `codegen` und `analyze` bleiben unabhängig. |
 | Export ohne Datenbankzugriff | Der Export läuft ausschließlich über die Blue-Prism-CLI. Eine direkte Datenbankabfrage ist nicht möglich. |
 | Exit-Code 0 bei Dateifehlern im `codegen` | Erfolg muss anhand der Ausgabe geprüft werden, nicht am Exit-Code. |
 | Kein `version`-Befehl | Das CLI kennt keinen Versionsschalter. Der Stand ergibt sich aus dem Stand des Quell-Repositories. |

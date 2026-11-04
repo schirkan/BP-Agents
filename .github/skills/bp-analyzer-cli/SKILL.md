@@ -48,29 +48,29 @@ Für die Ablaufanalyse relevant sind:
 ## Voraussetzungen
 
 - **Binary:** `bin\BP-Analyzer.exe` im Skill-Ordner, win-x64, self-contained single file — **keine .NET-Runtime nötig**, Templates sind eingebettet.
-- **Fertige Release-Builds gibt es.** Unter [Releases](https://github.com/schirkan/bp-analyzer/releases) liegt je Version das Einzel-Binary `BP-Analyzer-win-x64.exe` (rund 12,6 MB, self-contained, trimmed) plus `checksums.txt` mit der SHA256. Download-Pfad: `https://github.com/schirkan/bp-analyzer/releases/download/<tag>/BP-Analyzer-win-x64.exe`. Es ist eine einzelne Datei ohne ZIP — neben dem Binary wird nichts benötigt.
-- **Blue Prism lokal installiert:** `AutomateC.exe` unter `C:\Program Files\Blue Prism Limited\Blue Prism Automate\AutomateC.exe`. **Der Pfad ist im Tool fest verdrahtet**, es gibt keine CLI-Option dafür. Bei abweichender Installation melden, nicht umgehen.
+- **Release v1.0.4 (Stand 04.11.2026):** [BP-Analyzer.zip](https://github.com/schirkan/bp-analyzer/releases/download/v1.0.4/BP-Analyzer.zip) ist das einzige Release-Asset (7.623.855 Bytes), für Windows x64. Es enthält `BP-Analyzer.exe` und die Beispielkonfiguration `bp-analyzer.config.json`. Kein Umbenennen erforderlich. Die SHA256-Prüfsumme steht im [Release-Text](https://github.com/schirkan/bp-analyzer/releases/tag/v1.0.4), nicht in einer separaten Datei. Bei späteren Releases Asset und Prüfsumme auf der Release-Seite prüfen, nicht aus alten Dateinamen ableiten.
+- **Nur für `export`:** Blue Prism mit erreichbarer `AutomateC.exe`. Standard: `C:\Program Files\Blue Prism Limited\Blue Prism Automate\AutomateC.exe`. Priorität: `--automate-c=<pfad>` → `automateCPath` in `bp-analyzer.config.json` → Standardpfad. Die optionale Konfiguration wird zuerst neben der EXE, danach im aktuellen Arbeitsverzeichnis gesucht. `codegen` und `analyze` benötigen weder Blue-Prism-Installation noch Konfiguration.
 - **Anmeldung** an die Zielumgebung: SSO oder Benutzer mit Passwort. Die Rolle muss den Export erlauben.
 - **Schreibrechte** im Ablageverzeichnis.
 - Für `codegen`: XML-Dateien mit Wurzelelement `process`.
 
 ## Sicherheitsregeln
 
-1. **Lade das Binary nicht selbst herunter und baue es nicht selbst.** Fehlt `bin\BP-Analyzer.exe`, weise den Nutzer an, `BP-Analyzer-win-x64.exe` aus den [Releases](https://github.com/schirkan/bp-analyzer/releases) herunterzuladen, die Prüfsumme gegen `checksums.txt` abzugleichen, die Datei in `BP-Analyzer.exe` umzubenennen und **manuell** unter `bin\BP-Analyzer.exe` im Skill-Ordner abzulegen. Nenne Version, Download-URL, Zielpfad und warte auf die Bestätigung, dass die Datei liegt.
+1. **Lade das Binary nicht selbst herunter und baue es nicht selbst.** Fehlt `bin\BP-Analyzer.exe`, weise den Nutzer an, `BP-Analyzer.zip` aus den [Releases](https://github.com/schirkan/bp-analyzer/releases) herunterzuladen, die ZIP-Prüfsumme gegen den Release-Text abzugleichen und den Inhalt **manuell** im Skill-Ordner unter `bin\` abzulegen. Erwartet: `bin\BP-Analyzer.exe` und optional `bin\bp-analyzer.config.json`. Keine Umbenennung, keine separate Prüfsummendatei. Nenne Download-URL und Zielpfad; warte auf die Bestätigung.
 2. **Bestätige Zielumgebung und Prozessnamen vor dem Export.** Der Export greift mit Credentials auf die Blue-Prism-Umgebung zu und schreibt Dateien an den Zielpfad.
 3. **Entscheide `--overwrite` bewusst.** Standard ist `yes` — wiederholte Läufe überschreiben vorhandene Exporte. Bei wiederholten Analysen im selben Verzeichnis `--overwrite=no` verwenden und die Meldung `File already exists, skipping export` erwarten.
 4. **Zugangsdaten bleiben aus Argumenten.** SSO bevorzugen. Passwörter nie in ein Kommando, einen Argument, eine Datei oder eine Ausgabe schreiben. Der interaktive Modus maskiert die Eingabe.
 5. **Blue-Prism-XML enthält sensible Prozess- und Fachdaten.** Ergebnisse ausschließlich unter `analysis-records/` ablegen — der Ordner ist über die Root-`.gitignore` ausgeschlossen. Nichts committen, nichts hochladen, nichts in Chat-Ausgaben kopieren.
 6. **Baue den generierten Code nicht.** Das `.vbproj` ist nur ein Hinweis auf die Codeform, kein Bauauftrag. Das `net48`-Targeting-Pack wird nicht vorausgesetzt.
 7. **Behaupte nicht, der generierte Code bilde das Laufzeitverhalten ab.** UI-Automation, Object Calls und einige Stagetypen sind Platzhalter. Der Code ist eine statische, lesbare Darstellung der Struktur.
-8. **Ändere das Tool nicht aus diesem Skill heraus.** Insbesondere keine Änderung am hart verdrahteten `AutomateC.exe`-Pfad. Fehlt die Binary an dieser Stelle, melde die Abweichung und arbeite nicht weiter.
+8. **Ändere oder baue das Tool nicht.** Bei abweichendem AutomateC-Installationsort ist die vorhandene Option `--automate-c=<pfad>` erlaubt; verwende einen vom Nutzer benannten Pfad. Die Konfiguration nicht ungefragt ändern. Fehlt `AutomateC.exe` am gewählten Pfad, melde die Voraussetzung und stoppe nur den Export, nicht unabhängige `codegen`-/`analyze`-Aufgaben.
 9. **Keine Änderungen an Prozessen oder Sessions.** Der Export liest, er verändert die Blue-Prism-Umgebung nicht.
 
 ## Vorgehen
 
 1. **Scope klären.** Prozessname, Zielumgebung, gewünschter Schritt. Bei Frage nach `analyze` klarstellen, dass es ein zusätzliches Dokument für Menschen erzeugt und für die Ablaufanalyse nicht nötig ist.
 2. **Binary prüfen.** `bin\BP-Analyzer.exe` im Skill-Ordner. Fehlt es, den Nutzer anweisen und auf die Bestätigung warten.
-3. **AutomateC-Pfad prüfen.** Erwartet wird `C:\Program Files\Blue Prism Limited\Blue Prism Automate\AutomateC.exe`. Weicht der Pfad ab, melden.
+3. **Nur vor `export`: AutomateC-Pfad prüfen.** Nutzerangabe über `--automate-c=<pfad>`, vorhandene optionale Konfiguration oder Standardpfad verwenden. Bei Unklarheit nachfragen; keine Installation oder Konfigurationsänderung vornehmen.
 4. **Ablage festlegen.** Unter `analysis-records/<JJJJ-MM-TT>/<HHmmss-kurzer-bezug>/` die Unterordner `xml/`, `code/` und optional `sdd/` verwenden — identisch zur Nachweis-Ablage des Blue Prism Operator Agents.
 5. **Export ausführen** und die Zusammenfassung prüfen: `Succeeded`, `Failed` und die Dateiliste. Jeder fehlgeschlagene Export wird einzeln mit Fehlermeldung gelistet.
 6. **Codegen ausführen.** Anschließend prüfen, ob für **jede** XML-Datei eine `.vb`-Datei entstanden ist und ob die drei JSON-Dateien existieren. Fehlt eine Datei, wurde sie übersprungen — die Meldung `Error processing <datei>` steht nur im Text, der Exit-Code bleibt 0.
@@ -99,7 +99,7 @@ Reihenfolge und Aufrufe:
 $analyzer = (Resolve-Path -LiteralPath '.github\skills\bp-analyzer-cli\bin\BP-Analyzer.exe' -ErrorAction Stop).Path
 
 # 1) XML exportieren
-& $analyzer export --process='Rechnungsverarbeitung' --output='analysis-records/2026-11-04/161500-rechnungsverarbeitung-analyzer/xml'
+& $analyzer export "--process=Rechnungsverarbeitung" --output='analysis-records/2026-11-04/161500-rechnungsverarbeitung-analyzer/xml'
 $exitCode = $LASTEXITCODE
 
 # 2) Code erzeugen
