@@ -1,6 +1,6 @@
 # BP Log Viewer CLI – vollständige Parameter- und Nutzungsreferenz
 
-Diese Referenz beschreibt den Implementierungsstand im Repository vom 15.10.2026, nicht nur die verkürzte CLI-Hilfe. Beispiele verwenden fiktive Kennungen und Namen. Bei abweichenden Binary-Versionen die Version prüfen und die Implementierung als maßgebliche Quelle heranziehen.
+Diese Referenz beschreibt den Implementierungsstand im Repository vom 26.10.2026, nicht nur die verkürzte CLI-Hilfe. Beispiele verwenden fiktive Kennungen und Namen.
 
 ## 1. Voraussetzungen und Aufruf
 
@@ -10,12 +10,12 @@ Diese Referenz beschreibt den Implementierungsstand im Repository vom 15.10.2026
 
 Die lokale CLI liegt unter `bin\bp-log-viewer.exe` relativ zum Skill-Ordner, die konfigurierte `appsettings.json` daneben. Beide Dateien bleiben lokal; der `bin`-Ordner ist über die Root-`.gitignore` ausgeschlossen. Konfigurationsinhalte nicht anzeigen.
 
+Quelle der Binaries ist das Repository [**bp-log-viewer-cli**](https://github.com/schirkan/bp-log-viewer-cli). Der Agent lädt das Binary nicht selbst herunter und baut es nicht selbst, sondern weist den Nutzer an, es manuell unter `bin\bp-log-viewer.exe` im Skill-Ordner abzulegen.
+
 Das folgende Beispiel setzt das Repository-Root als aktuelles Arbeitsverzeichnis voraus:
 
 ```powershell
 $cli = (Resolve-Path -LiteralPath '.github\skills\bp-log-viewer-cli\bin\bp-log-viewer.exe' -ErrorAction Stop).Path
-& $cli version
-$exitCode = $LASTEXITCODE
 & $cli session list --max-rows 50
 $exitCode = $LASTEXITCODE
 ```
@@ -39,7 +39,7 @@ Allgemeine Syntax: `bp-log-viewer [globale-optionen] <befehl> <unterbefehl> [ken
 |---|---|
 | Ohne Argumente, `help`, `--help`, `-h` | Root-Hilfe als Klartext auf stderr, Exit 0 |
 | `session help`, `resource help`, `process help`, `queue help`, `audit help` | Kurze Syntaxhilfe für die Gruppe; auch ohne Unterbefehl oder mit `--help`/`-h` möglich |
-| `version`, `--version`, `-v` | Ein JSONL-Objekt mit Versionsinformationen; bevorzugt `version` verwenden |
+| `version`, `--version`, `-v` | Ein JSONL-Objekt mit Versionsinformationen |
 
 Die globale Filterprüfung kann auch bei Hilfe-/Versionsflags Warnungen erzeugen. Eine Hilfeoption hinter einem bereits gewählten Unterbefehl, etwa `session log --help`, ist keine vollständige Unterbefehlshilfe und kann eine echte Abfrage bzw. einen Parserfehler auslösen.
 

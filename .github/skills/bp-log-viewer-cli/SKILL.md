@@ -16,18 +16,20 @@ Lies vor der Auswahl von Parametern die [vollständige CLI-Referenz](./reference
 
 ## Lokale CLI und Voraussetzungen
 
-- Verwende bevorzugt `bin\bp-log-viewer.exe` relativ zum Ordner dieser Skill-Datei. Die lokale Verbindungskonfiguration liegt daneben unter `bin\appsettings.json`; benötigte DLLs gehören ebenfalls in diesen Ordner.
+- Verwende `bin\bp-log-viewer.exe` relativ zum Ordner dieser Skill-Datei. Die lokale Verbindungskonfiguration liegt daneben unter `bin\appsettings.json`; benötigte DLLs gehören ebenfalls in diesen Ordner.
+- Das Binary stammt aus dem Repository [**bp-log-viewer-cli**](https://github.com/schirkan/bp-log-viewer-cli) (Projekt `src/BpLogViewer.Cli/BpLogViewer.Cli.csproj`; framework-dependent single file, benötigt .NET 8 Runtime x64).
+- **Lade das Binary nicht selbst herunter und baue es nicht selbst.** Fehlt es, weise den Nutzer an, es aus dem Quell-Repository zu beschaffen und **manuell** unter `bin\bp-log-viewer.exe` im Skill-Ordner abzulegen; die Verbindungskonfiguration legt er daneben unter `bin\appsettings.json` ab. Nenne Quelle, Zielpfad und Runtime-Voraussetzung und warte auf die Bestätigung, dass die Dateien liegen.
 - Löse den Binary-Pfad vor dem Aufruf zu einem absoluten Windows-Pfad auf. Er ist relativ zum Skill-Ordner, nicht zum beliebigen aktuellen Arbeitsverzeichnis. Verlasse dich nicht auf die PATH-Suche.
 - Das CLI sucht `appsettings.json` zuerst im Binary-Verzeichnis (nach einem nur intern verwendeten expliziten Basisverzeichnis), danach im Arbeitsverzeichnis und dessen Parent. Vorhandene ENV-Verbindungswerte können die Dateikonfiguration übersteuern; siehe [Konfiguration](./references/cli-reference.md#8-konfiguration-und-zeitangaben).
 - Prüfe nur die Existenz der lokalen Konfiguration; ihren Inhalt mit echten Verbindungsdaten nicht lesen, anzeigen oder kopieren. Verwende die eingerichtete Verbindung ohne Zugangsdaten in Argumenten.
 - Der gesamte lokale `bin`-Ordner ist über die Root-`.gitignore` ausgeschlossen. Binaries und Verbindungskonfiguration nicht committen oder hochladen; die Ignore-Regel entfernt keine bereits versionierten Dateien.
-- Fehlen Binary, Konfiguration oder benötigte Runtime, melde die fehlende Voraussetzung. Nicht ungefragt bauen, installieren oder die Konfiguration ändern.
+- Fehlen Binary, Konfiguration oder benötigte Runtime, melde die fehlende Voraussetzung und die oben beschriebene manuelle Ablage. Nicht ungefragt bauen, installieren, herunterladen oder die Konfiguration ändern.
 
 ## Vorgehen
 
 1. Kläre Ziel, Kennung und Zeitraum. Frage nach, wenn der betroffene Prozess oder die Session nicht eindeutig ist.
 2. Prüfe die lokale CLI unter `bin\bp-log-viewer.exe` und die danebenliegende `appsettings.json`. Verwende den aufgelösten absoluten Binary-Pfad und in PowerShell den Aufrufoperator `&`. Ein anderer Installationsort muss ausdrücklich benannt sein.
-3. Prüfe bei Bedarf `version`; verwende `self-test` nur zur Diagnose von Konfiguration oder Verbindung. Beachte: `self-test` schreibt und löscht eine temporäre Testdatei und kann ein `temp`-Verzeichnis hinterlassen.
+3. Verwende `self-test` nur zur Diagnose von Konfiguration oder Verbindung. Beachte: `self-test` schreibt und löscht eine temporäre Testdatei und kann ein `temp`-Verzeichnis hinterlassen.
 4. Wähle anhand der Referenz den engsten geeigneten Befehl. Verwende explizite Zeitangaben mit `Z` oder Offset und zunächst ein kleines `--max-rows`.
 5. Prüfe stdout, stderr und den unmittelbar nach dem Aufruf erfassten Exit-Code. Parse JSONL zeilenweise, nicht als JSON-Array. Ausnahme: `session log` liefert kompakte Arrays - die erste Zeile ist der Spaltenkopf, danach folgt je Log-Eintrag ein Array mit 8 Werten in derselben Spaltenreihenfolge. Warnungen und leere Ausgabe sind keine Belege für Fehlerfreiheit.
 6. Verfeinere Filter oder erhöhe das Limit, wenn entscheidende Daten fehlen. Bei Log-Trunkierung fehlen die späteren Einträge, möglicherweise gerade der Abbruch. Es gibt keine serverseitige Log-Paginierung oder Zeitfilterung.
@@ -62,4 +64,4 @@ $exitCode = $LASTEXITCODE
 
 ## Quelle / Source
 
-Die beschriebene CLI lebt im Repository [**bp-log-viewer-cli**](https://github.com/schirkan/bp-log-viewer-cli). Ergänzungen, Korrekturen und Issues bitte dort einreichen.
+Die beschriebene CLI lebt im Repository [**bp-log-viewer-cli**](https://github.com/schirkan/bp-log-viewer-cli). Ergänzungen, Korrekturen und Issues bitte dort einreichen. Das Binary für die lokale Ablage unter `bin\` stammt aus demselben Repository; der Agent lädt es nicht selbst herunter und baut es nicht selbst.
