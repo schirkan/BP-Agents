@@ -29,7 +29,7 @@ Lies vor der Auswahl von Parametern die [vollständige CLI-Referenz](./reference
 2. Prüfe die lokale CLI unter `bin\bp-log-viewer.exe` und die danebenliegende `appsettings.json`. Verwende den aufgelösten absoluten Binary-Pfad und in PowerShell den Aufrufoperator `&`. Ein anderer Installationsort muss ausdrücklich benannt sein.
 3. Prüfe bei Bedarf `version`; verwende `self-test` nur zur Diagnose von Konfiguration oder Verbindung. Beachte: `self-test` schreibt und löscht eine temporäre Testdatei und kann ein `temp`-Verzeichnis hinterlassen.
 4. Wähle anhand der Referenz den engsten geeigneten Befehl. Verwende explizite Zeitangaben mit `Z` oder Offset und zunächst ein kleines `--max-rows`.
-5. Prüfe stdout, stderr und den unmittelbar nach dem Aufruf erfassten Exit-Code. Parse JSONL zeilenweise, nicht als JSON-Array. Warnungen und leere Ausgabe sind keine Belege für Fehlerfreiheit.
+5. Prüfe stdout, stderr und den unmittelbar nach dem Aufruf erfassten Exit-Code. Parse JSONL zeilenweise, nicht als JSON-Array. Ausnahme: `session log` liefert kompakte Arrays - die erste Zeile ist der Spaltenkopf, danach folgt je Log-Eintrag ein Array mit 8 Werten in derselben Spaltenreihenfolge. Warnungen und leere Ausgabe sind keine Belege für Fehlerfreiheit.
 6. Verfeinere Filter oder erhöhe das Limit, wenn entscheidende Daten fehlen. Bei Log-Trunkierung fehlen die späteren Einträge, möglicherweise gerade der Abbruch. Es gibt keine serverseitige Log-Paginierung oder Zeitfilterung.
 
 ## Fehleranalyse eines abgebrochenen Prozesses
