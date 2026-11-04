@@ -16,7 +16,23 @@ Diese Referenz dokumentiert das tatsächliche Verhalten des BP-Analyzer-CLI (Pro
 | Quellprojekt | `BP-Analyzer.csproj`, `TargetFramework net8.0`, AssemblyName `BP-Analyzer` |
 | Publish | `dotnet publish BP-Analyzer.csproj -p:PublishProfile=BP-Analyzer-win-x64 -o publish` |
 
-Im Repository existieren **keine Releases, keine Tags und keine CI-Workflows** — es gibt keinen fertigen Download und keine Release-Seite. Das Binary entsteht ausschließlich durch den oben gezeigten lokalen Publish, der das .NET-8-SDK vorausetzt. Der Agent führt diesen Publish nicht aus, sondern weist den Nutzer an.
+### Release-Builds
+
+Unter [Releases](https://github.com/schirkan/bp-analyzer/releases) liegen fertige Windows-Builds. Zwei Workflows sind aktiv: `CI` (ci.yml) für Build und Tests, `Release` (release.yml) für die Veröffentlichung. Der Release-Workflow läuft bei jedem Tag-Push (`v*`) sowie manuell per `workflow_dispatch`.
+
+| Release | Datum | Asset | Größe |
+|---|---|---|---|
+| `v1.0.1` | 04.11.2026 | `BP-Analyzer-win-x64.exe` | 12.625.782 Bytes |
+| `v1.0.0` | 04.11.2026 | `BP-Analyzer-win-x64.exe` | 12.625.429 Bytes |
+
+- Download-Pfad: `https://github.com/schirkan/bp-analyzer/releases/download/<tag>/BP-Analyzer-win-x64.exe`
+- Zu jedem Release gehört `checksums.txt` (91 Bytes) mit der SHA256 des Binaries. Prüfen mit `Get-FileHash BP-Analyzer-win-x64.exe -Algorithm SHA256`.
+- Das Asset ist eine **einzelne Datei, kein ZIP**. Neben dem Binary wird nichts benötigt — die Templates sind eingebettet, eine .NET-Runtime wird nicht vorausgesetzt.
+- Der Asset-Name lautet `BP-Analyzer-win-x64.exe`; für die lokale Ablage wird die Datei in `BP-Analyzer.exe` umbenannt.
+- Der Workflow leitet die Version aus dem Tag ab und setzt sie per `-p:Version` — die Assembly-Metadaten folgen damit dem Tag.
+- **Größenwächter:** Der Workflow bricht ab, wenn das Binary über 20 MB wiegt. Ursache ist in der Regel ein übersprungenes Trimming, weil das Publish-Profil beim Restore nicht mitgegeben wurde. Erwartet sind rund 12,6 MB.
+- Die Release-Notes liegen im Repository in `RELEASE_NOTES.md`; der Workflow ersetzt dort den Platzhalter `<sha256>` durch den tatsächlichen Hash.
+- Für einen Build aus dem Quellcode gilt weiterhin: `dotnet publish BP-Analyzer.csproj -p:PublishProfile=BP-Analyzer-win-x64 -o publish` (setzt das .NET-8-SDK voraus).
 | Template-Abhängigkeit | Handlebars.Net 2.1.6; `TemplateProvider` bevorzugt eine Datei auf der Platte, damit lokale Overrides weiter funktionieren |
 
 Aufruf:
