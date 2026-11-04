@@ -15,6 +15,8 @@ Diese Referenz dokumentiert das tatsächliche Verhalten des BP-Analyzer-CLI (Pro
 | .NET-Runtime | **nicht erforderlich** — Templates sind als Ressource eingebettet |
 | Quellprojekt | `BP-Analyzer.csproj`, `TargetFramework net8.0`, AssemblyName `BP-Analyzer` |
 | Publish | `dotnet publish BP-Analyzer.csproj -p:PublishProfile=BP-Analyzer-win-x64 -o publish` |
+
+Im Repository existieren **keine Releases, keine Tags und keine CI-Workflows** — es gibt keinen fertigen Download und keine Release-Seite. Das Binary entsteht ausschließlich durch den oben gezeigten lokalen Publish, der das .NET-8-SDK vorausetzt. Der Agent führt diesen Publish nicht aus, sondern weist den Nutzer an.
 | Template-Abhängigkeit | Handlebars.Net 2.1.6; `TemplateProvider` bevorzugt eine Datei auf der Platte, damit lokale Overrides weiter funktionieren |
 
 Aufruf:

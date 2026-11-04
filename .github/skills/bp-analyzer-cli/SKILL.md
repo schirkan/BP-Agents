@@ -48,6 +48,7 @@ Für die Ablaufanalyse relevant sind:
 ## Voraussetzungen
 
 - **Binary:** `bin\BP-Analyzer.exe` im Skill-Ordner, win-x64, self-contained single file — **keine .NET-Runtime nötig**, Templates sind eingebettet.
+- **Es gibt keine Release-Builds.** Im Repository existieren weder Releases noch Tags noch CI-Workflows, es gibt also keinen fertigen Download. Das Binary entsteht ausschließlich durch einen lokalen Publish mit dem hinterlegten Profil: `dotnet publish BP-Analyzer.csproj -p:PublishProfile=BP-Analyzer-win-x64 -o publish`. Das setzt das .NET-8-SDK voraus.
 - **Blue Prism lokal installiert:** `AutomateC.exe` unter `C:\Program Files\Blue Prism Limited\Blue Prism Automate\AutomateC.exe`. **Der Pfad ist im Tool fest verdrahtet**, es gibt keine CLI-Option dafür. Bei abweichender Installation melden, nicht umgehen.
 - **Anmeldung** an die Zielumgebung: SSO oder Benutzer mit Passwort. Die Rolle muss den Export erlauben.
 - **Schreibrechte** im Ablageverzeichnis.
@@ -55,7 +56,7 @@ Für die Ablaufanalyse relevant sind:
 
 ## Sicherheitsregeln
 
-1. **Lade das Binary nicht selbst herunter und baue es nicht selbst.** Fehlt `bin\BP-Analyzer.exe`, weise den Nutzer an, es aus dem Quell-Repository zu beschaffen und manuell im Skill-Ordner abzulegen. Nenne Quelle, Zielpfad und Zielsystem.
+1. **Lade das Binary nicht selbst herunter und baue es nicht selbst.** Fehlt `bin\BP-Analyzer.exe`, weise den Nutzer an, es lokal zu publishen (`dotnet publish BP-Analyzer.csproj -p:PublishProfile=BP-Analyzer-win-x64 -o publish`) und `BP-Analyzer.exe` manuell im Skill-Ordner abzulegen. Es gibt keine Releases, die man herunterladen könnte. Nenne Quelle, Befehl, Zielpfad und Zielsystem.
 2. **Bestätige Zielumgebung und Prozessnamen vor dem Export.** Der Export greift mit Credentials auf die Blue-Prism-Umgebung zu und schreibt Dateien an den Zielpfad.
 3. **Entscheide `--overwrite` bewusst.** Standard ist `yes` — wiederholte Läufe überschreiben vorhandene Exporte. Bei wiederholten Analysen im selben Verzeichnis `--overwrite=no` verwenden und die Meldung `File already exists, skipping export` erwarten.
 4. **Zugangsdaten bleiben aus Argumenten.** SSO bevorzugen. Passwörter nie in ein Kommando, einen Argument, eine Datei oder eine Ausgabe schreiben. Der interaktive Modus maskiert die Eingabe.
@@ -123,5 +124,5 @@ Vollständige Parameter- und Ausgabestruktur: `references/cli-reference.md`.
 
 ## Quelle / Source
 
-- Das Tool lebt im Repository [**bp-analyzer**](https://github.com/schirkan/bp-analyzer). Ergänzungen, Korrekturen und Issues bitte dort einreichen. Das Binary für die lokale Ablage unter `bin\` stammt aus demselben Repository; der Agent lädt es nicht selbst herunter und baut es nicht selbst.
+- Das Tool lebt im Repository [**bp-analyzer**](https://github.com/schirkan/bp-analyzer). Ergänzungen, Korrekturen und Issues bitte dort einreichen. Das Binary für die lokale Ablage unter `bin\` entsteht durch einen lokalen Publish in diesem Repository; Releases existieren nicht. Der Agent lädt es nicht selbst herunter und baut es nicht selbst.
 - Blue-Prism-CLI-Schalter für `AutomateC.exe`: siehe den Skill `bp-cli` und die offizielle Referenz [Blue Prism Command line options](https://documentation.blueprism.com/bp-7-4/en-us/helpCommandLine.htm).

@@ -12,6 +12,22 @@ Die lokale CLI liegt unter `bin\bp-log-viewer.exe` relativ zum Skill-Ordner, die
 
 Quelle der Binaries ist das Repository [**bp-log-viewer-cli**](https://github.com/schirkan/bp-log-viewer-cli). Der Agent lädt das Binary nicht selbst herunter und baut es nicht selbst, sondern weist den Nutzer an, es manuell unter `bin\bp-log-viewer.exe` im Skill-Ordner abzulegen.
 
+### Release-Builds
+
+Unter [Releases](https://github.com/schirkan/bp-log-viewer-cli/releases) liegen fertige Windows-Builds. Der Workflow `release-single-exe` läuft bei jedem Tag-Push (`v*`) sowie manuell per `workflow_dispatch`; er publiziert das CLI als single file, packt die Ausgabe in ein ZIP, erzeugt die SHA256-Datei und legt Release plus automatisch generierte Release-Notes an.
+
+| Release | Datum | Asset | Größe |
+|---|---|---|---|
+| `v0.3.0` | 15.10.2026 | `bp-log-viewer-win-x64-v0.3.0.zip` | 11.004.015 Bytes |
+| `v0.2.0` | 14.10.2026 | `bp-log-viewer-win-x64-v0.2.0.zip` | 11.003.923 Bytes |
+| `v0.1.0` | 14.10.2026 | `bp-log-viewer-win-x64-v0.1.0.zip` | 33.997.367 Bytes |
+
+- Download-Pfad: `https://github.com/schirkan/bp-log-viewer-cli/releases/download/<version>/bp-log-viewer-win-x64-<version>.zip`
+- Zu jedem ZIP gehört eine Datei `<...>.zip.sha256` mit der Prüfsumme. Vor dem Entpacken abgleichen.
+- Inhalt des ZIP: die Published-Dateien aus `out/win-x64` — die `bp-log-viewer.exe` sowie eine `appsettings.json`, die der Build aus `appsettings.template.json` erzeugt. Die Vorlage enthält **keine** echten Verbindungsdaten und muss gefüllt werden.
+- Der Build bleibt framework-dependent und single-file: .NET 8 Runtime x64 wird weiterhin vorausgesetzt.
+- Für einen Build aus dem Quellcode gilt: `dotnet publish src/BpLogViewer.Cli/BpLogViewer.Cli.csproj -c Release -r win-x64`
+
 Das folgende Beispiel setzt das Repository-Root als aktuelles Arbeitsverzeichnis voraus:
 
 ```powershell
