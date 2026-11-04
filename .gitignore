@@ -28,6 +28,7 @@ temp/
 
 # Lokale Skill-Binaries und Verbindungskonfiguration
 /.github/skills/bp-log-viewer-cli/bin/
+/.github/skills/bp-analyzer-cli/bin/
 
 # Lokale Analysen und sensible Nachweise
 /analysis-records/
