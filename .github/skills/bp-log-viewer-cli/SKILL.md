@@ -14,10 +14,19 @@ Das CLI liest Daten einer Blue-Prism-7.5.x-Datenbank (SQL Server oder LocalDB) u
 
 Lies vor der Auswahl von Parametern die [vollständige CLI-Referenz](./references/cli-reference.md). Sie dokumentiert alle implementierten Befehle und Optionen, ihre tatsächliche Wirkung und bekannte Einschränkungen. Nicht jede global akzeptierte Option wirkt auf jeden Befehl.
 
+## Lokale CLI und Voraussetzungen
+
+- Verwende bevorzugt `bin\bp-log-viewer.exe` relativ zum Ordner dieser Skill-Datei. Die lokale Verbindungskonfiguration liegt daneben unter `bin\appsettings.json`; benötigte DLLs gehören ebenfalls in diesen Ordner.
+- Löse den Binary-Pfad vor dem Aufruf zu einem absoluten Windows-Pfad auf. Er ist relativ zum Skill-Ordner, nicht zum beliebigen aktuellen Arbeitsverzeichnis. Verlasse dich nicht auf die PATH-Suche.
+- Das CLI sucht `appsettings.json` zuerst im Binary-Verzeichnis (nach einem nur intern verwendeten expliziten Basisverzeichnis), danach im Arbeitsverzeichnis und dessen Parent. Vorhandene ENV-Verbindungswerte können die Dateikonfiguration übersteuern; siehe [Konfiguration](./references/cli-reference.md#8-konfiguration-und-zeitangaben).
+- Prüfe nur die Existenz der lokalen Konfiguration; ihren Inhalt mit echten Verbindungsdaten nicht lesen, anzeigen oder kopieren. Verwende die eingerichtete Verbindung ohne Zugangsdaten in Argumenten.
+- Der gesamte lokale `bin`-Ordner ist über die Root-`.gitignore` ausgeschlossen. Binaries und Verbindungskonfiguration nicht committen oder hochladen; die Ignore-Regel entfernt keine bereits versionierten Dateien.
+- Fehlen Binary, Konfiguration oder benötigte Runtime, melde die fehlende Voraussetzung. Nicht ungefragt bauen, installieren oder die Konfiguration ändern.
+
 ## Vorgehen
 
 1. Kläre Ziel, Kennung und Zeitraum. Frage nach, wenn der betroffene Prozess oder die Session nicht eindeutig ist.
-2. Ermittle den absoluten Pfad zu einer vorhandenen `bp-log-viewer.exe`. Verwende in PowerShell den Aufrufoperator `&`.
+2. Prüfe die lokale CLI unter `bin\bp-log-viewer.exe` und die danebenliegende `appsettings.json`. Verwende den aufgelösten absoluten Binary-Pfad und in PowerShell den Aufrufoperator `&`. Ein anderer Installationsort muss ausdrücklich benannt sein.
 3. Prüfe bei Bedarf `version`; verwende `self-test` nur zur Diagnose von Konfiguration oder Verbindung. Beachte: `self-test` schreibt und löscht eine temporäre Testdatei und kann ein `temp`-Verzeichnis hinterlassen.
 4. Wähle anhand der Referenz den engsten geeigneten Befehl. Verwende explizite Zeitangaben mit `Z` oder Offset und zunächst ein kleines `--max-rows`.
 5. Prüfe stdout, stderr und den unmittelbar nach dem Aufruf erfassten Exit-Code. Parse JSONL zeilenweise, nicht als JSON-Array. Warnungen und leere Ausgabe sind keine Belege für Fehlerfreiheit.
@@ -25,10 +34,10 @@ Lies vor der Auswahl von Parametern die [vollständige CLI-Referenz](./reference
 
 ## Fehleranalyse eines abgebrochenen Prozesses
 
-Die Beispiele verwenden illustrative Namen, Session-Nummern und Zeitangaben. Ersetze sie durch Werte aus der Anfrage bzw. aus den Ergebnissen.
+Die Beispiele verwenden illustrative Namen, Session-Nummern und Zeitangaben. Ersetze sie durch Werte aus der Anfrage bzw. aus den Ergebnissen. Die folgende Pfadauflösung setzt das Repository-Root als aktuelles Arbeitsverzeichnis voraus; bei anderem Arbeitsverzeichnis den absoluten Skill-Ordner verwenden.
 
 ```powershell
-$cli = 'D:\Tools\BPLogViewer\bp-log-viewer.exe'
+$cli = (Resolve-Path -LiteralPath '.github\skills\bp-log-viewer-cli\bin\bp-log-viewer.exe' -ErrorAction Stop).Path
 & $cli session list --process 'Rechnungsverarbeitung' --since '2026-10-15T00:00:00Z' --until '2026-10-16T00:00:00Z' --max-rows 50
 $exitCode = $LASTEXITCODE
 ```

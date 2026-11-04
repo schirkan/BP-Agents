@@ -8,15 +8,19 @@ Diese Referenz beschreibt den Implementierungsstand im Repository vom 15.10.2026
 - Erreichbare Blue-Prism-7.5.x-Datenbank auf SQL Server oder LocalDB und entsprechend berechtigter Datenbankzugang.
 - Vorhandene `bp-log-viewer.exe` und eingerichtete Verbindung. Das CLI steuert keine RPA-Ausführungen.
 
+Die lokale CLI liegt unter `bin\bp-log-viewer.exe` relativ zum Skill-Ordner, die konfigurierte `appsettings.json` daneben. Beide Dateien bleiben lokal; der `bin`-Ordner ist über die Root-`.gitignore` ausgeschlossen. Konfigurationsinhalte nicht anzeigen.
+
+Das folgende Beispiel setzt das Repository-Root als aktuelles Arbeitsverzeichnis voraus:
+
 ```powershell
-$cli = 'D:\Tools\BPLogViewer\bp-log-viewer.exe'
+$cli = (Resolve-Path -LiteralPath '.github\skills\bp-log-viewer-cli\bin\bp-log-viewer.exe' -ErrorAction Stop).Path
 & $cli version
 $exitCode = $LASTEXITCODE
 & $cli session list --max-rows 50
 $exitCode = $LASTEXITCODE
 ```
 
-Der Pfad ist ein Beispiel, kein fest vorausgesetzter Installationsort. Verwende einen vorhandenen absoluten Windows-Pfad und `&`; verlasse dich nicht auf die PATH-Suche. Namen mit Leerzeichen in Anführungszeichen setzen.
+Bei anderem Arbeitsverzeichnis den Binary-Pfad aus dem absoluten Skill-Ordner ableiten. Ein anderer Installationsort muss ausdrücklich benannt sein. Verwende einen vorhandenen absoluten Windows-Pfad und `&`; verlasse dich nicht auf die PATH-Suche. Namen mit Leerzeichen in Anführungszeichen setzen.
 
 Allgemeine Syntax: `bp-log-viewer [globale-optionen] <befehl> <unterbefehl> [kennung] [optionen]`.
 
