@@ -5,7 +5,7 @@ description: "Vollständige Parameter- und Ausgabereferenz für den Skill bp-ana
 
 # BP Analyzer CLI — Parameter- und Ausgabereferenz
 
-Diese Referenz dokumentiert das tatsächliche Verhalten des BP-Analyzer-CLI (Projektstand 04.11.2026). Beispiele verwenden fiktive Prozess- und Umgebungsnamen.
+Diese Referenz dokumentiert das tatsächliche Verhalten des BP-Analyzer-CLI, nicht nur die gekürzte Hilfe. Beispiele verwenden fiktive Prozess- und Umgebungsnamen. Weicht die tatsächliche Ausgabe von dieser Beschreibung ab, läuft ein älteres Binary: auf das neueste Release wechseln.
 
 ## 1. Binary und Aufruf
 
@@ -16,16 +16,16 @@ Diese Referenz dokumentiert das tatsächliche Verhalten des BP-Analyzer-CLI (Pro
 | Quellprojekt | `BP-Analyzer.csproj`, `TargetFramework net8.0`, AssemblyName `BP-Analyzer` |
 | Publish | `dotnet publish BP-Analyzer.csproj -p:PublishProfile=BP-Analyzer-win-x64 -o publish` |
 
-### Release-Builds (Stand 04.11.2026, v1.0.4)
+### Release-Builds
 
-[Release v1.0.4](https://github.com/schirkan/bp-analyzer/releases/tag/v1.0.4) bietet ausschließlich [BP-Analyzer.zip](https://github.com/schirkan/bp-analyzer/releases/download/v1.0.4/BP-Analyzer.zip) (7.623.855 Bytes, Windows x64).
+Im jeweils neuesten Release auf der [Release-Seite](https://github.com/schirkan/bp-analyzer/releases) liegt das Paket `BP-Analyzer.zip` (Windows x64).
 
 - Inhalt: `BP-Analyzer.exe` und `bp-analyzer.config.json` als Beispielkonfiguration. Entpacken und manuell unter `.github/skills/bp-analyzer-cli/bin/` ablegen; keine Umbenennung erforderlich.
-- Keine separate EXE und keine `checksums.txt` als Release-Asset. Die SHA256 steht im Release-Text. Für v1.0.4: `855a2eddbbcc109ace72d0b600e17868add46575f89df2e195c08f0b59db9b1a`.
+- Die SHA256-Prüfsumme steht im Release-Text der jeweiligen Version, nicht in einer separaten Datei.
 - Der Nutzer kann das ZIP mit `Get-FileHash BP-Analyzer.zip -Algorithm SHA256` prüfen. Der Agent lädt es nicht herunter, entpackt es nicht und baut weder das Tool noch den generierten Code.
 - Keine .NET-Runtime erforderlich. Templates sind eingebettet; `codegen` und `analyze` funktionieren ohne Konfiguration oder Blue-Prism-Installation.
-- Release-Builds entstehen bei Version-Tag-Pushes, nicht bei Branch-Pushes oder Pull Requests. Seit v1.0.4 wird kein redundantes Workflow-Artefakt mehr hochgeladen.
-- Bei späteren Releases Download-Asset und Prüfsumme auf der Release-Seite prüfen, nicht historische Dateinamen voraussetzen.
+- Release-Builds entstehen bei Version-Tag-Pushes, nicht bei Branch-Pushes oder Pull Requests. Seit dem Umstieg auf ein reines ZIP-Asset wird kein redundantes Workflow-Artefakt mehr hochgeladen.
+- **Nimm immer das neueste Release** und lies Download-Asset und Prüfsumme auf der Release-Seite - nicht historische Dateinamen voraussetzen. Release-Nummern, Daten und Größen sind hier bewusst nicht festgeschrieben.
 
 ### Optionale AutomateC-Konfiguration (nur Export)
 

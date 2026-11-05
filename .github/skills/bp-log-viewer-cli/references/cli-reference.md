@@ -1,6 +1,6 @@
 # BP Log Viewer CLI – vollständige Parameter- und Nutzungsreferenz
 
-Diese Referenz beschreibt den Implementierungsstand im Repository vom 26.10.2026, nicht nur die verkürzte CLI-Hilfe. Beispiele verwenden fiktive Kennungen und Namen.
+Diese Referenz beschreibt den Vertrag des aktuellen Repository-Stands und des daraus gebauten, jeweils neuesten Releases - nicht nur die verkürzte CLI-Hilfe. Beispiele verwenden fiktive Kennungen und Namen. Weicht die tatsächliche Ausgabe von dieser Beschreibung ab, läuft ein älteres Binary: auf das neueste Release wechseln.
 
 ## 1. Voraussetzungen und Aufruf
 
@@ -16,11 +16,7 @@ Quelle der Binaries ist das Repository [**bp-log-viewer-cli**](https://github.co
 
 Unter [Releases](https://github.com/schirkan/bp-log-viewer-cli/releases) liegen fertige Windows-Builds. Der Workflow `release-single-exe` läuft bei jedem Tag-Push (`v*`) sowie manuell per `workflow_dispatch`; er publiziert das CLI als single file, packt die Ausgabe in ein ZIP, erzeugt die SHA256-Datei und legt Release plus automatisch generierte Release-Notes an.
 
-| Release | Datum | Asset | Größe |
-|---|---|---|---|
-| `v0.3.0` | 15.10.2026 | `bp-log-viewer-win-x64-v0.3.0.zip` | 11.004.015 Bytes |
-| `v0.2.0` | 14.10.2026 | `bp-log-viewer-win-x64-v0.2.0.zip` | 11.003.923 Bytes |
-| `v0.1.0` | 14.10.2026 | `bp-log-viewer-win-x64-v0.1.0.zip` | 33.997.367 Bytes |
+- **Verwende immer das neueste Release auf der Release-Seite.** Ältere Releases können ein anderes Ausgabeformat liefern als das hier Beschriebene - das betrifft vor allem das Format von `session log`. Release-Nummern, Daten und Größen sind hier bewusst nicht festgeschrieben; Stand und Asset-Namen stehen auf der Release-Seite.
 
 - Download-Pfad: `https://github.com/schirkan/bp-log-viewer-cli/releases/download/<version>/bp-log-viewer-win-x64-<version>.zip`
 - Zu jedem ZIP gehört eine Datei `<...>.zip.sha256` mit der Prüfsumme. Vor dem Entpacken abgleichen.
