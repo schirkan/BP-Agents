@@ -82,7 +82,6 @@ started_at: "2026-10-26T15:53:00+01:00"
 captured_at: "2026-10-26T15:53:02+01:00"
 tool: "bp-log-viewer.exe"
 command: 'bp-log-viewer.exe session log 4711 --max-rows 2000'
-target: "BP-Development"
 purpose: "Ablauf vor dem Abbruch nachvollziehen"
 exit_code: 0
 outcome: "success"
@@ -92,8 +91,6 @@ limits:
   max_rows: 2000
 query_since: null
 query_until: null
-truncated: false
-source_truncated: null
 ---
 
 # Session-Log 4711
@@ -115,9 +112,9 @@ source_truncated: null
 Keine bekannte Kürzung bei der Erfassung; Vollständigkeit der CLI-Ausgabe unbekannt.
 ````
 
-- Die Werte im Beispiel sind illustrativ. Dokumentiere den tatsächlichen Binary-Pfad, die Argumente, Zielumgebung, Filter und Limits. Dokumentiere den tatsächlichen Aufruf vollständig; auch Shell-/Remote-Aufrufe und deren Ziel müssen nachvollziehbar sein. Zugangsdaten gehören nicht in den Aufruf — Credentials werden interaktiv übergeben und erscheinen deshalb weder im Kommando noch in der Ausgabe.
+- Die Werte im Beispiel sind illustrativ. Dokumentiere den tatsächlichen Binary-Namen (ohne Pfad), die Argumente, Filter und Limits. Dokumentiere den tatsächlichen Aufruf vollständig; auch Shell-/Remote-Aufrufe und deren Ziel müssen nachvollziehbar sein. Zugangsdaten gehören nicht in den Aufruf — Credentials werden interaktiv übergeben und erscheinen deshalb weder im Kommando noch in der Ausgabe.
 - `outcome`: `success`, `empty`, `failed` oder `unknown`. Unterscheide eine erfolgreich leere Abfrage von einem Fehler; leite das Ergebnis nicht allein aus dem Exit-Code ab. Bei unbekanntem Exit-Code oder nicht getrennt verfügbaren Ausgabeströmen `null` bzw. eine Einschränkung dokumentieren, nichts rekonstruieren oder erfinden.
-- `truncated` bezeichnet eine gekürzte Erfassung durch das ausführende Tool; `source_truncated` eine Kürzung durch CLI, Datenquelle oder Abfragelimit. Verwende `null`, wenn unbekannt. Erfasse Zeitraum und Offset, sofern ein Zeitfilter verwendet wird. Limits und Warnungen immer dokumentieren; fehlende Daten sind kein Nachweis für Fehlerfreiheit.
+- Erfasse Zeitraum und Offset, sofern ein Zeitfilter verwendet wird. Limits und Warnungen immer dokumentieren; fehlende Daten sind kein Nachweis für Fehlerfreiheit.
 - Halte stdout/stderr leer, wenn der jeweilige Strom nachweislich leer war. Kennzeichne nicht verfügbare oder zusammengeführte Ausgaben unter Einschränkungen. Wähle bei Ausgaben mit Backticks längere Markdown-Fences, damit die Datei gültig bleibt.
 
 ### Ablage und Zugriff
